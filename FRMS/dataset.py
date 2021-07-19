@@ -22,7 +22,7 @@ class FacesDataset(Dataset):
     def __getitem__(self, item):
         label = self._image_labels[item]
         img = Image.open(self.paths[item]).convert('RGB')
-        x = self._face_detector.find_faces(img)[0]
+        x = self._face_detector.find_faces(img)[0][0]
         y = torch.tensor(label)
         return x, y
 
