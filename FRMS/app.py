@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 import base64
 import io
@@ -7,6 +8,17 @@ from FRMS.utils import FaceDetector, FeatureExtractor, FeatureMatcher
 from FRMS.datamodels import RequestModel, ResponseModel
 
 app = FastAPI(title='Face Recognition Microservice', version='0.1.0')
+
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 detector = FaceDetector()
 feature_extractor = FeatureExtractor()
 feature_matcher = FeatureMatcher()
