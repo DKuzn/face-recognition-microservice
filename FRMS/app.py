@@ -6,6 +6,7 @@ import io
 from PIL import Image
 from FRMS.utils import FaceDetector, FeatureExtractor, FeatureMatcher
 from FRMS.datamodels import RequestModel, ResponseModel
+import os
 
 app = FastAPI(title='Face Recognition Microservice', version='0.1.0')
 
@@ -19,9 +20,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+try:
+    THRESHOLD = os.environ['THRESHOLD']
+except KeyError:
+    THRESHOLD = 0.03
+
+try:
+    DEVIATION_PERCENT = os.environ['DEVIATION_PERCENT']
+except KeyError:
+    DEVIATION_PERCENT = 0.05
+
 detector = FaceDetector()
 feature_extractor = FeatureExtractor()
-feature_matcher = FeatureMatcher()
+feature_matcher = FeatureMatcher(max_distance=THRESHOLD, deviation_percent=DEVIATION_PERCENT)
 
 
 @app.post('/', response_model=List[ResponseModel])
