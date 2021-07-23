@@ -3,7 +3,7 @@ from facenet_pytorch.models.utils.detect_face import extract_face
 from facenet_pytorch.models.mtcnn import fixed_image_standardization
 from PIL.Image import Image
 from typing import List, Tuple
-from FRMS.database import Session, Face, PersonInfo
+from FRMS.database import Session, Face, PersonInfo, AvgFace
 import torch
 
 
@@ -20,9 +20,10 @@ class FaceDetector:
     def find_faces(self, img: Image) -> List[Tuple[torch.Tensor, List[int]]]:
         bboxes, _ = self._mtcnn.detect(img, landmarks=False)
         faces_and_bboxes = []
-        for bb in bboxes:
-            face = extract_face(img, bb, image_size=self._img_size)
-            faces_and_bboxes.append((fixed_image_standardization(face), list(bb)))
+        if bboxes is not None:
+            for bb in bboxes:
+                face = extract_face(img, bb, image_size=self._img_size)
+                faces_and_bboxes.append((fixed_image_standardization(face), list(bb)))
         return faces_and_bboxes
 
 
@@ -38,14 +39,19 @@ class FeatureExtractor:
 
 
 class FeatureMatcher:
-    def __init__(self, max_distance: float = 0.04):
+    def __init__(self, max_distance: float = 0.03, deviation_percent: float = 0.05):
         self.max_distance = max_distance
+        self.deviation_percent = deviation_percent
         self._session = Session()
+        self._avg_face = self._get_avg_face()
         self._query = self._session.query(Face, PersonInfo).join(PersonInfo, Face.person_id == PersonInfo.id)
 
     def match_features(self, features: torch.Tensor):
         dists, ids = [], []
-        for t, _ in self._query:
+        avg_dist = distance(features, self._avg_face)
+        percent = avg_dist * self.deviation_percent
+        query = self._query.filter(Face.distance < avg_dist + percent, Face.distance >= avg_dist - percent)
+        for t, _ in query:
             dists.append(distance(features, t.tensor))
             ids.append(t.person_id)
 
@@ -72,6 +78,10 @@ class FeatureMatcher:
             return index
         else:
             return None
+
+    def _get_avg_face(self) -> torch.Tensor:
+        avg_face = self._session.query(AvgFace).one()
+        return avg_face.tensor
 
 
 def distance(features1: torch.Tensor, features2: torch.Tensor) -> float:
