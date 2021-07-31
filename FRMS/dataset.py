@@ -43,12 +43,6 @@ class FacesDataset(Dataset):
         image_labels = [self._label_indexes[pathlib.Path(path).parent.name] for path in self.paths]
         return image_labels
 
-    def avg_face(self):
-        avg_face = torch.zeros(512).detach()
-        for t in range(len(self)):
-            avg_face += self._feature_extractor.extract_features(self[t][0])
-        return avg_face / len(self)
-
     def get_face_id(self, item):
         face_id = str(pathlib.Path(self.paths[item]).parent).split('/')[-1]
         return int(face_id)
@@ -58,7 +52,6 @@ if __name__ == '__main__':
     ds = FacesDataset('../database')
     print(len(ds))
     print(ds.labels_names)
-    print(ds.avg_face())
     for i in range(10):
         print(ds[i][1])
         print(ds.get_face_id(i))
