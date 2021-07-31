@@ -17,12 +17,10 @@ class Face(Base):
     __tablename__ = 'faces'
     id = Column(Integer, primary_key=True, autoincrement=True)
     features = Column(String)
-    distance = Column(Float)
     person_id = Column(Integer, ForeignKey('person_info.id'))
 
-    def __init__(self, tensor: torch.Tensor, distance: float, person_id: int):
+    def __init__(self, tensor: torch.Tensor, person_id: int):
         self.features = self._tensor_to_str(tensor)
-        self.distance = distance
         self.person_id = person_id
 
     @property
@@ -34,29 +32,7 @@ class Face(Base):
         return ' '.join([str(i) for i in t.tolist()])
 
     def __repr__(self):
-        return "<Face('%s','%s','%s')>" % (self.features, self.distance, self.person_id)
-
-
-class AvgFace(Base):
-    __tablename__ = 'avg_face'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    features = Column(String)
-    faces_count = Column(Integer)
-
-    def __init__(self, tensor: torch.Tensor, faces_count: int):
-        self.features = self._tensor_to_str(tensor)
-        self.faces_count = faces_count
-
-    @property
-    def tensor(self):
-        return torch.tensor(list(map(float, self.features.split(' '))))
-
-    @staticmethod
-    def _tensor_to_str(t):
-        return ' '.join([str(i) for i in t.tolist()])
-
-    def __repr__(self):
-        return "<AvgFace('%s','%s')>" % (self.features, self.faces_count)
+        return "<Face('%s','%s')>" % (self.features, self.person_id)
 
 
 class PersonInfo(Base):
@@ -75,7 +51,7 @@ class PersonInfo(Base):
 
 if __name__ == '__main__':
     Base.metadata.create_all(engine)
-    users_table = Face.__tablename__, PersonInfo.__tablename__, AvgFace.__tablename__
+    users_table = Face.__tablename__, PersonInfo.__tablename__
     print(users_table)
     metadata = Base.metadata
     print(metadata)
