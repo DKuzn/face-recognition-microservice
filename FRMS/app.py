@@ -25,14 +25,9 @@ try:
 except KeyError:
     THRESHOLD = 0.03
 
-try:
-    DEVIATION_PERCENT = os.environ['DEVIATION_PERCENT']
-except KeyError:
-    DEVIATION_PERCENT = 0.05
-
 detector = FaceDetector()
 feature_extractor = FeatureExtractor()
-feature_matcher = FeatureMatcher(max_distance=THRESHOLD, deviation_percent=DEVIATION_PERCENT)
+feature_matcher = FeatureMatcher(max_distance=THRESHOLD)
 
 
 @app.post('/', response_model=List[ResponseModel])
