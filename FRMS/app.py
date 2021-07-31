@@ -21,7 +21,7 @@ app.add_middleware(
 )
 
 try:
-    THRESHOLD = os.environ['THRESHOLD']
+    THRESHOLD = float(os.environ['THRESHOLD'])
 except KeyError:
     THRESHOLD = 0.03
 
