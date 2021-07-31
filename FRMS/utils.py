@@ -3,7 +3,7 @@ from facenet_pytorch.models.utils.detect_face import extract_face
 from facenet_pytorch.models.mtcnn import fixed_image_standardization
 from PIL.Image import Image
 from typing import List, Tuple
-from FRMS.database import Session, Face, PersonInfo, AvgFace
+from FRMS.database import Session, Face, PersonInfo
 import torch
 
 
@@ -39,19 +39,14 @@ class FeatureExtractor:
 
 
 class FeatureMatcher:
-    def __init__(self, max_distance: float = 0.03, deviation_percent: float = 0.05):
+    def __init__(self, max_distance: float = 0.03):
         self.max_distance = max_distance
-        self.deviation_percent = deviation_percent
         self._session = Session()
-        self._avg_face = self._get_avg_face()
         self._query = self._session.query(Face, PersonInfo).join(PersonInfo, Face.person_id == PersonInfo.id)
 
     def match_features(self, features: torch.Tensor):
         dists, ids = [], []
-        avg_dist = distance(features, self._avg_face)
-        percent = avg_dist * self.deviation_percent
-        query = self._query.filter(Face.distance < avg_dist + percent, Face.distance >= avg_dist - percent)
-        for t, _ in query:
+        for t, _ in self._query:
             dists.append(distance(features, t.tensor))
             ids.append(t.person_id)
 
@@ -78,10 +73,6 @@ class FeatureMatcher:
             return index
         else:
             return None
-
-    def _get_avg_face(self) -> torch.Tensor:
-        avg_face = self._session.query(AvgFace).one()
-        return avg_face.tensor
 
 
 def distance(features1: torch.Tensor, features2: torch.Tensor) -> float:
