@@ -1,5 +1,5 @@
 from torch.utils.data import Dataset
-from FRMS.utils import FeatureExtractor, FaceDetector
+from FRMS.utils.face_detector import FaceDetector
 import torch
 import pathlib
 from PIL import Image
@@ -13,7 +13,6 @@ class FacesDataset(Dataset):
         self.labels_names = self._list_labels_names()
         self._label_indexes = self._label_indexes()
         self._image_labels = self._labels()
-        self._feature_extractor = FeatureExtractor()
         self._face_detector = FaceDetector()
 
     def __len__(self):

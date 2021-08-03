@@ -4,7 +4,9 @@ from typing import List
 import base64
 import io
 from PIL import Image
-from FRMS.utils import FaceDetector, FeatureExtractor, FeatureMatcher
+from FRMS.utils.face_detector import FaceDetector
+from FRMS.utils.feature_extractor import FeatureExtractor
+from FRMS.utils.feature_matcher import FeatureMatcher
 from FRMS.datamodels import RequestModel, ResponseModel
 import os
 
