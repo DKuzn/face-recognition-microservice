@@ -27,9 +27,10 @@ from FRMS.utils.face_detector import FaceDetector
 from FRMS.utils.feature_extractor import FeatureExtractor
 from FRMS.utils.feature_matcher import FeatureMatcher
 from FRMS.datamodels import RequestModel, ResponseModel
+from FRMS import __version__
 import os
 
-app = FastAPI(title='Face Recognition Microservice', version='0.1.0')
+app = FastAPI(title='Face Recognition Microservice', version=__version__)
 
 origins = ["*"]
 
