@@ -34,7 +34,7 @@ class FaceDetector:
         img_size: Size in pixels of cropped face image.
         min_face_size: Size in pixels of minimal face on image.
 
-    Examples:
+    Example:
         >>> import PIL
         >>> from FRMS.utils.face_detector import FaceDetector
         >>> detector = FaceDetector()
@@ -56,7 +56,7 @@ class FaceDetector:
         Args:
             img: PIL Image.
 
-        Returns:
+        Return:
             List of tuples image -- tensor and list of bounding box coordinates.
         """
         bboxes, _ = self._mtcnn.detect(img, landmarks=False)

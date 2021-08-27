@@ -43,7 +43,7 @@ class FeatureExtractor:
         Args:
             face: Face image tensor.
 
-        Returns:
+        Return:
             Tensor of features.
         """
         face: torch.Tensor = face.to(self._device)
