@@ -20,13 +20,13 @@ Note:
     Set environment variable DATABASE_URL to correct work of this module.
 
 Example:
-    >>> from FRMS.database import Session, Face, PersonInfo
+    >>> from FRMS.database import Session, Face
     >>> session = Session()
-    >>> for face, person in session.query(Face, PersonInfo).join(PersonInfo, Face.person_id == PersonInfo.id)
-    ...     print(face, person)
+    >>> for face in session.query(Face)
+    ...     print(face)
 """
 
-from sqlalchemy import Column, Integer, String, ForeignKey, create_engine
+from sqlalchemy import Column, Integer, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
 from sqlalchemy.orm import sessionmaker
 import torch
@@ -46,17 +46,17 @@ class Face(Base):
 
     Args:
         tensor: Features tensor.
-        person_id: Foreign key to table 'person_info'.
+        person_id: ID of the person.
 
     Attributes:
         id: Primary key of table (set automatically).
         features: Features string.
-        person_id: Foreign key  to table 'person_info'.
+        person_id: ID of the person.
     """
     __tablename__: str = 'faces'
     id: int = Column(Integer, primary_key=True, autoincrement=True)
     features: str = Column(String)
-    person_id: int = Column(Integer, ForeignKey('person_info.id'))
+    person_id: int = Column(Integer)
 
     def __init__(self, tensor: torch.Tensor, person_id: int) -> None:
         self.features = self._tensor_to_str(tensor)
@@ -83,34 +83,9 @@ class Face(Base):
         return "<Face('%s','%s')>" % (self.features, self.person_id)
 
 
-class PersonInfo(Base):
-    """Class to work with table 'person_info'.
-
-    Args:
-        name: Name of person.
-        surname: Surname of person.
-
-    Attributes:
-        id: Primary key of table (set automatically).
-        name: Name of person.
-        surname: Surname of person.
-    """
-    __tablename__: str = 'person_info'
-    id: int = Column(Integer, primary_key=True, autoincrement=True)
-    name: str = Column(String)
-    surname: str = Column(String)
-
-    def __init__(self, name: str, surname: str) -> None:
-        self.name = name
-        self.surname = surname
-
-    def __repr__(self):
-        return "<PersonInfo('%s','%s')>" % (self.name, self.surname)
-
-
 if __name__ == '__main__':
     Base.metadata.create_all(engine)
-    users_table = Face.__tablename__, PersonInfo.__tablename__
+    users_table = Face.__tablename__
     print(users_table)
     metadata = Base.metadata
     print(metadata)
