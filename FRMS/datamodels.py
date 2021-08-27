@@ -16,7 +16,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """This module contains data validation models.
 
-Data validation provided bu Pydantic.
+Data validation provided by Pydantic.
 """
 
 from pydantic import BaseModel
@@ -37,11 +37,7 @@ class ResponseModel(BaseModel):
 
     Attributes:
         bbox: Coordinates of bounding box.
-        id: ID of person.
-        name: Name of person.
-        surname: Surname of person.
+        id: ID of the person.
     """
     bbox: List[int]
     id: Optional[int]
-    name: str
-    surname: str
