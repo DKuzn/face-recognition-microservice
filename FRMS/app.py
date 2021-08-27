@@ -51,7 +51,7 @@ app.add_middleware(
 try:
     THRESHOLD: float = float(os.environ['THRESHOLD'])
 except KeyError:
-    THRESHOLD: float = 0.03
+    THRESHOLD: float = 1.0
 
 detector: FaceDetector = FaceDetector()
 feature_extractor: FeatureExtractor = FeatureExtractor()
