@@ -20,7 +20,7 @@ Features matches by calculating distance between given features tensor
 and features tensors from database.
 """
 
-from FRMS.database import Session, Face, PersonInfo
+from FRMS.database import Session, Face
 from sqlalchemy.orm import Query
 from typing import Dict, Union, List, Optional
 import torch
@@ -41,13 +41,13 @@ class FeatureMatcher:
         >>> import torch
         >>> from FRMS.utils.feature_matcher import FeatureMatcher
         >>> features = torch.rand(512)
-        >>> feature_matcher = FeatureMatcher(max_distance=0.03)
+        >>> feature_matcher = FeatureMatcher(max_distance=1.0)
         >>> result = feature_matcher.match_features(features)
     """
     def __init__(self, max_distance: float = 0.03):
         self.max_distance: float = max_distance
         self._session: Session = Session()
-        self._query: Query = self._session.query(Face, PersonInfo).join(PersonInfo, Face.person_id == PersonInfo.id)
+        self._query: Query = self._session.query(Face)
 
     def match_features(self, features: torch.Tensor) -> Dict[str, Union[List[int], int, str]]:
         """Match given features tensor with features tensor from database.
@@ -55,29 +55,22 @@ class FeatureMatcher:
         Args:
             features: Tensor of features.
 
-        Returns:
+        Return:
             Dict of person info.
         """
         dists: List[float] = []
         ids: List[int] = []
-        for t, _ in self._query:
+        for t in self._query:
             dists.append(distance(features, t.tensor))
             ids.append(t.person_id)
 
         min_index: Optional[int] = self._min_dist(dists)
         if min_index is not None:
-            _, q = self._query.filter(PersonInfo.id == ids[min_index]).one()
-            id_: int = q.id
-            name: str = q.name
-            surname: str = q.surname
+            id_: int = ids[min_index]
         else:
             id_: None = None
-            name: str = '-'
-            surname: str = '-'
-        data: Dict[str, Union[List[int], int, str]] = {'bbox': [],
-                                                       'id': id_,
-                                                       'name': name,
-                                                       'surname': surname}
+        data: Dict[str, Union[List[int], Optional[int]]] = {'bbox': [],
+                                                            'id': id_}
         return data
 
     def _min_dist(self, dists: List[float]) -> Optional[int]:
@@ -111,5 +104,5 @@ def distance(features1: torch.Tensor, features2: torch.Tensor) -> float:
     Return:
         Calculated distance.
     """
-    dist: float = (torch.sqrt_((features1 - features2) ** 2).mean()).item()
+    dist: float = torch.norm(features1 - features2, dim=0)
     return dist
