@@ -8,7 +8,7 @@ setup(
     url='https://github.com/DKuzn/FaceRecognitionMicroservice',
     license='LGPLv3',
     author='Dmitry Kuznetsov',
-    author_email='DKuznetsov2000@mail.ru',
+    author_email='DKuznetsov2000@outlook.com',
     description='Microservice for face recognition',
     install_requires=['fastapi', 'torch', 'torchvision', 'facenet_pytorch', 'SQLAlchemy', 'psycopg2-binary', 'uvicorn']
 )
