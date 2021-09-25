@@ -83,9 +83,16 @@ class Face(Base):
         return "<Face('%s','%s')>" % (self.features, self.person_id)
 
 
-if __name__ == '__main__':
+def create_table() -> None:
+    """Creates the table in the database.
+
+    Return:
+        None
+    """
     Base.metadata.create_all(engine)
-    users_table = Face.__tablename__
-    print(users_table)
-    metadata = Base.metadata
-    print(metadata)
+    table: str = Face.__tablename__
+    print(table)
+
+
+if __name__ == '__main__':
+    create_table()
