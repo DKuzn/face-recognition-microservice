@@ -26,6 +26,7 @@ import torch
 from pathlib import Path
 from typing import List, Dict, Tuple
 from PIL import Image
+import os
 
 
 class FacesDataset(Dataset):
@@ -99,7 +100,7 @@ class FacesDataset(Dataset):
         Return:
             Face ID.
         """
-        face_id: str = str(Path(self.paths[item]).parent).split('/')[-1]
+        face_id: str = str(Path(self.paths[item]).parent).split(os.sep)[-1]
         return int(face_id)
 
 
