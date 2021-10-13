@@ -17,3 +17,4 @@ docs/make.bat
 docs/Makefile
 FRMS/db.sqlite3
 .vscode
+VGGFace2
