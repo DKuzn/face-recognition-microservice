@@ -26,9 +26,10 @@ Example:
     ...     print(face)
 """
 
-from sqlalchemy import Column, Integer, String, create_engine
+from sqlalchemy import Column, Integer, PickleType, create_engine
 from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
 from sqlalchemy.orm import sessionmaker
+from typing import List
 import torch
 import os
 
@@ -50,34 +51,22 @@ class Face(Base):
 
     Attributes:
         id: Primary key of table (set automatically).
-        features: Features string.
+        features: Features list.
         person_id: ID of the person.
     """
     __tablename__: str = 'faces'
     id: int = Column(Integer, primary_key=True, autoincrement=True)
-    features: str = Column(String)
+    features: List[float] = Column(PickleType)
     person_id: int = Column(Integer)
 
     def __init__(self, tensor: torch.Tensor, person_id: int) -> None:
-        self.features = self._tensor_to_str(tensor)
+        self.features = tensor.tolist()
         self.person_id = person_id
 
     @property
     def tensor(self) -> torch.Tensor:
-        """Convert string features to tensor."""
-        return torch.tensor(list(map(float, self.features.split(' '))))
-
-    @staticmethod
-    def _tensor_to_str(tensor) -> str:
-        """Convert tensor to string.
-
-        Args:
-            tensor: Features tensor
-
-        Return:
-            Tensor string.
-        """
-        return ' '.join([str(i) for i in tensor.tolist()])
+        """Convert list features to tensor."""
+        return torch.tensor(self.features)
 
     def __repr__(self) -> str:
         return "<Face('%s','%s')>" % (self.features, self.person_id)
