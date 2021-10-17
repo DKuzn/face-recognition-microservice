@@ -58,40 +58,22 @@ class FeatureMatcher:
         Return:
             Dict of person info.
         """
-        dists: List[float] = []
-        ids: List[int] = []
+        min_dist: float = 1
+        idx: int = -1
         for t in self._query:
-            dists.append(distance(features, t.tensor))
-            ids.append(t.person_id)
+            dist: float = distance(features, t.tensor)
+            if dist < min_dist:
+                min_dist = dist
+                idx: int = t.person_id
 
-        min_index: Optional[int] = self._min_dist(dists)
-        if min_index is not None:
-            id_: int = ids[min_index]
+        if min_dist <= self.max_distance:
+            id_: int = idx
         else:
-            id_: None = None
+            id_: int = None
+        
         data: Dict[str, Union[List[int], Optional[int]]] = {'bbox': [],
                                                             'id': id_}
         return data
-
-    def _min_dist(self, dists: List[float]) -> Optional[int]:
-        """Find minimal distance and compare it with threshold.
-
-        Args:
-            dists: List of distances.
-
-        Return:
-            Index if distance is below threshold. None otherwise.
-        """
-        min_dist: float = 1
-        index: Optional[int] = None
-        for idx, i in enumerate(dists):
-            if i < min_dist:
-                min_dist = i
-                index = idx
-        if min_dist <= self.max_distance:
-            return index
-        else:
-            return None
 
 
 def distance(features1: torch.Tensor, features2: torch.Tensor) -> float:
