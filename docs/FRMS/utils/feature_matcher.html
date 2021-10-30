@@ -89,40 +89,22 @@ class FeatureMatcher:
         Return:
             Dict of person info.
         &#34;&#34;&#34;
-        dists: List[float] = []
-        ids: List[int] = []
+        min_dist: float = 1
+        idx: int = -1
         for t in self._query:
-            dists.append(distance(features, t.tensor))
-            ids.append(t.person_id)
+            dist: float = distance(features, t.tensor)
+            if dist &lt; min_dist:
+                min_dist = dist
+                idx: int = t.person_id
 
-        min_index: Optional[int] = self._min_dist(dists)
-        if min_index is not None:
-            id_: int = ids[min_index]
+        if min_dist &lt;= self.max_distance:
+            id_: int = idx
         else:
-            id_: None = None
+            id_: int = None
+        
         data: Dict[str, Union[List[int], Optional[int]]] = {&#39;bbox&#39;: [],
                                                             &#39;id&#39;: id_}
         return data
-
-    def _min_dist(self, dists: List[float]) -&gt; Optional[int]:
-        &#34;&#34;&#34;Find minimal distance and compare it with threshold.
-
-        Args:
-            dists: List of distances.
-
-        Return:
-            Index if distance is below threshold. None otherwise.
-        &#34;&#34;&#34;
-        min_dist: float = 1
-        index: Optional[int] = None
-        for idx, i in enumerate(dists):
-            if i &lt; min_dist:
-                min_dist = i
-                index = idx
-        if min_dist &lt;= self.max_distance:
-            return index
-        else:
-            return None
 
 
 def distance(features1: torch.Tensor, features2: torch.Tensor) -&gt; float:
@@ -244,40 +226,22 @@ unrecognized.</dd>
         Return:
             Dict of person info.
         &#34;&#34;&#34;
-        dists: List[float] = []
-        ids: List[int] = []
+        min_dist: float = 1
+        idx: int = -1
         for t in self._query:
-            dists.append(distance(features, t.tensor))
-            ids.append(t.person_id)
+            dist: float = distance(features, t.tensor)
+            if dist &lt; min_dist:
+                min_dist = dist
+                idx: int = t.person_id
 
-        min_index: Optional[int] = self._min_dist(dists)
-        if min_index is not None:
-            id_: int = ids[min_index]
+        if min_dist &lt;= self.max_distance:
+            id_: int = idx
         else:
-            id_: None = None
+            id_: int = None
+        
         data: Dict[str, Union[List[int], Optional[int]]] = {&#39;bbox&#39;: [],
                                                             &#39;id&#39;: id_}
-        return data
-
-    def _min_dist(self, dists: List[float]) -&gt; Optional[int]:
-        &#34;&#34;&#34;Find minimal distance and compare it with threshold.
-
-        Args:
-            dists: List of distances.
-
-        Return:
-            Index if distance is below threshold. None otherwise.
-        &#34;&#34;&#34;
-        min_dist: float = 1
-        index: Optional[int] = None
-        for idx, i in enumerate(dists):
-            if i &lt; min_dist:
-                min_dist = i
-                index = idx
-        if min_dist &lt;= self.max_distance:
-            return index
-        else:
-            return None</code></pre>
+        return data</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -306,17 +270,19 @@ unrecognized.</dd>
     Return:
         Dict of person info.
     &#34;&#34;&#34;
-    dists: List[float] = []
-    ids: List[int] = []
+    min_dist: float = 1
+    idx: int = -1
     for t in self._query:
-        dists.append(distance(features, t.tensor))
-        ids.append(t.person_id)
+        dist: float = distance(features, t.tensor)
+        if dist &lt; min_dist:
+            min_dist = dist
+            idx: int = t.person_id
 
-    min_index: Optional[int] = self._min_dist(dists)
-    if min_index is not None:
-        id_: int = ids[min_index]
+    if min_dist &lt;= self.max_distance:
+        id_: int = idx
     else:
-        id_: None = None
+        id_: int = None
+    
     data: Dict[str, Union[List[int], Optional[int]]] = {&#39;bbox&#39;: [],
                                                         &#39;id&#39;: id_}
     return data</code></pre>
