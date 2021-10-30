@@ -34,7 +34,7 @@ import torch
 import os
 
 
-DATABASE_URL: str = os.environ['DATABASE_URL'].replace('postgres', 'postgresql')
+DATABASE_URL: str = os.environ['DATABASE_URL'].replace('postgres://', 'postgresql://')
 engine = create_engine(DATABASE_URL)
 Session = sessionmaker(bind=engine)
 
