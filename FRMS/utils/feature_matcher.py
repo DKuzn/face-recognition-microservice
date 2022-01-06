@@ -47,7 +47,6 @@ class FeatureMatcher:
     def __init__(self, max_distance: float = 0.03):
         self.max_distance: float = max_distance
         self._session: Session = Session()
-        self._query: Query = self._session.query(Face)
 
     def match_features(self, features: torch.Tensor) -> Dict[str, Union[List[int], int, str]]:
         """Match given features tensor with features tensor from database.
@@ -58,13 +57,19 @@ class FeatureMatcher:
         Return:
             Dict of person info.
         """
-        min_dist: float = 1
+        min_dist: float = 1000000.0
         idx: int = -1
-        for t in self._query:
+
+        self._session.begin()
+        query: Query = self._session.query(Face)
+        
+        for t in query:
             dist: float = distance(features, t.tensor)
             if dist < min_dist:
                 min_dist = dist
                 idx: int = t.person_id
+
+        self._session.close()
 
         if min_dist <= self.max_distance:
             id_: int = idx
