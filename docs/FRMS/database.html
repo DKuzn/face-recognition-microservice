@@ -72,7 +72,7 @@ import os
 
 
 DATABASE_URL: str = os.environ[&#39;DATABASE_URL&#39;].replace(&#39;postgres://&#39;, &#39;postgresql://&#39;)
-engine = create_engine(DATABASE_URL)
+engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 Session = sessionmaker(bind=engine)
 
 
