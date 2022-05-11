@@ -19,4 +19,4 @@
 This package contains microservice for face recognition.
 """
 
-__version__: str = '1.3.1'
+__version__: str = '1.4.0'
