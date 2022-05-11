@@ -27,6 +27,7 @@ and features tensors from database.
 
 from FRMS.database import Session, Face
 from sqlalchemy.orm import Query
+from sqlalchemy.exc import InvalidRequestError
 from typing import Dict, Union, List, Optional
 import torch
 
@@ -65,7 +66,11 @@ class FeatureMatcher:
         min_dist: float = 1000000.0
         idx: int = -1
 
-        self._session.begin()
+        try:
+            self._session.begin()
+        except InvalidRequestError:
+            self._session.close()
+
         query: Query = self._session.query(Face)
         
         for t in query:
