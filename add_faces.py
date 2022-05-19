@@ -24,7 +24,7 @@ Example:
     >>> python add_faces.py path/to/dataset
 """
 
-from FRMS.database import Session, Face, create_table
+from FRMS.database import get_connection, Face, create_table
 from FRMS.dataset import FacesDataset
 from FRMS.utils.feature_extractor import FeatureExtractor
 from torch import Tensor
@@ -43,7 +43,7 @@ def fill_database(path_to_dataset: str) -> None:
         None
     """
     ds: FacesDataset = FacesDataset(path_to_dataset)
-    session: Session = Session()
+    session, _ = get_connection()
     feature_extractor: FeatureExtractor = FeatureExtractor()
     faces_count: int = len(ds)
 

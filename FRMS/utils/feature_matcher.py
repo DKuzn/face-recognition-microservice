@@ -20,7 +20,7 @@ Features matches by calculating distance between given features tensor
 and features tensors from database.
 """
 
-from FRMS.database import Session, Face
+from FRMS.database import get_connection, Face
 from sqlalchemy.orm import Query
 from sqlalchemy.exc import InvalidRequestError
 from typing import Dict, Union, List, Optional
@@ -47,7 +47,7 @@ class FeatureMatcher:
     """
     def __init__(self, max_distance: float = 0.03):
         self.max_distance: float = max_distance
-        self._session: Session = Session()
+        self._session, _ = get_connection()
 
     def match_features(self, features: torch.Tensor) -> Dict[str, Union[List[int], int, str]]:
         """Match given features tensor with features tensor from database.
