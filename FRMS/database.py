@@ -14,29 +14,44 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-"""This module contains classes to work with database.
+"""This module contains classes and functions to work with database.
 
 Note:
     Set environment variable DATABASE_URL to correct work of this module.
 
 Example:
-    >>> from FRMS.database import Session, Face
-    >>> session = Session()
+    >>> from FRMS.database import get_connection, Face
+    >>> session, _ = get_connection()
     >>> for face in session.query(Face)
     ...     print(face)
 """
 
 from sqlalchemy import Column, Integer, PickleType, create_engine
 from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
-from sqlalchemy.orm import sessionmaker
-from typing import List
+from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.engine import Engine
+from typing import List, Tuple
 import torch
 import os
 
 
-DATABASE_URL: str = os.environ['DATABASE_URL'].replace('postgres://', 'postgresql://')
-engine = create_engine(DATABASE_URL, pool_pre_ping=True)
-Session = sessionmaker(bind=engine)
+def get_connection(database_url: str = '') -> Tuple[Session, Engine]:
+    """Gets session and engine to connect to database.
+
+    Args:
+        database_url: Database connection string.
+
+    Return:
+        Session and Engine classes instances.
+    """
+    try:
+        DATABASE_URL: str = os.environ['DATABASE_URL'].replace('postgres://', 'postgresql://')
+    except KeyError:
+        DATABASE_URL: str = database_url
+
+    engine: Engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+    session: Session = sessionmaker(bind=engine)
+    return session(), engine
 
 
 Base: DeclarativeMeta = declarative_base()
@@ -72,12 +87,16 @@ class Face(Base):
         return "<Face('%s','%s')>" % (self.features, self.person_id)
 
 
-def create_table() -> None:
+def create_table(database_url: str = '') -> None:
     """Creates the table in the database.
+
+    Args:
+        database_url: Database connection string.
 
     Return:
         None
     """
+    _, engine = get_connection(database_url)
     Base.metadata.create_all(engine)
     table: str = Face.__tablename__
     print(table)
